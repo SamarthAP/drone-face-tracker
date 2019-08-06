@@ -21,7 +21,7 @@ face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 tello.connect()
 tello.set_speed(speed)
 tello.streamon()
-# tello.takeoff()
+tello.takeoff()
 
 # init object to read video frames from Tello
 frame_read = tello.get_frame_read() 
@@ -57,8 +57,8 @@ while running:
         velocity_yaw = 0
 
     for (x,y,w,h) in faces:
-        cv2.rectangle(frame_gray,(x,y),(x+w,y+h),(255,0,0),2)
-        cv2.circle(frame_gray, (x + w//2 , y + h//2), 5, (0, 0, 255))
+        cv2.rectangle(frame_gray,(x,y),(x+w,y+h),(255,0,0),2) # face outline rectaangle
+        cv2.circle(frame_gray, (x + w//2 , y + h//2), 5, (0, 0, 255)) # middle of face outline
 
         face_middle = (x + w // 2, y + h // 2) # middle of face coordinate
         frame_middle = (frame_shape[1] // 2, frame_shape[0] // 2) # middle of frame coordinate
@@ -68,6 +68,12 @@ while running:
 
         # displacement of face from middle of frame; forward/back and yaw are 0; NOTE: using only width for z axis displacement
         displacement_vector = np.array([frame_middle[0] - face_middle[0], z_axis_displacement[0], frame_middle[1] - face_middle[1], 0])
+
+        # threshold circle 
+        cv2.circle(frame_gray, (face_middle[0], face_middle[1]), 100, (255, 0, 0), 5)
+
+        # vector line 
+        cv2.line(frame_gray, (x + w//2 , y + h//2), (x + w//2 + displacement_vector[0] , y + h//2 + displacement_vector[2]), (255, 0, 0), 2)
 
         if not abs(displacement_vector[0]) < 100:
             velocity_lr = speed * int(displacement_vector[0]/abs(displacement_vector[0]))
@@ -79,18 +85,18 @@ while running:
         else:
             velocity_fb = 0
 
-        # NOTE: has to be negative bc if drone is high and face is low, displacement is positive 
-        # bc y axis is positive downwards 
         if not abs(displacement_vector[2]) < 100:
-            velocity_ud = speed * int(-displacement_vector[2]/abs(displacement_vector[2]))
+            velocity_ud = speed * int(displacement_vector[2]/abs(displacement_vector[2]))
         else:
             velocity_ud = 0
+        
+        break
     
     tello.send_rc_control(velocity_lr, velocity_fb, velocity_ud, velocity_yaw)
+
+    # middle of frame 
     cv2.circle(frame_gray, (frame_gray.shape[1] // 2, frame_gray.shape[0] // 2), 5, (0, 255, 0))
-    cv2.imshow('Tello Video ' + str(frame_gray), frame_gray)
+    cv2.imshow('Tello Video', frame_gray)
 
-
-
-# tello.land()
+tello.land()
 tello.end()
