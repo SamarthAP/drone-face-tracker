@@ -17,7 +17,7 @@ I took the video frames from the drone and used OpenCV, numpy and a Haar Cascade
 
 We basically want the drone to move so it's centered on a face, so the the middle of the frame has to be around the middle of the face. The 2D vector can help in moving the drone up, down, left and right, but not in a third dimension (forward/backward). To find the third dimension, I used the size of the face and compared it with an arbitrary face size. For example, let's say a 'normal' face size is 150x150 pixels. If the current face found is larger than 150x150, we know that the drone is too close, and vice versa. So with all of that we get a 3D vector representing the displacement of the drone. 
 
-Next I set an arbitrary threshold such that if the drone's displacement was within said threshold, it wouldn't need to move. This is so that the drone doesn't constantly try to 'fix' it's position even if is just a few pixels off of the center of the face. Now we have all of the information needed, and all that was left to do was send movement commands to the drone, based on the vector and the threshold.
+Next I set an arbitrary threshold such that if the drone's displacement was within said threshold, it wouldn't need to move. This is so that the drone doesn't constantly try to 'fix' it's position even if is just a few pixels off of the center of the face. Now we have all of the information needed, all that's left to do is to send movement commands to the drone, based on the vector and the threshold.
 
 ### Possible Improvements
 - Use a combination of yaw and left/right movement to handle a left/right displacement of the face. Currently yaw is not used, only left/right movement is.
