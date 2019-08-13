@@ -19,4 +19,12 @@ We basically want the drone to move so it's centered on a face, so the the middl
 
 Next I set an arbitrary threshold such that if the drone's displacement was within said threshold, it wouldn't need to move. This is so that the drone doesn't constantly try to 'fix' it's position even if is just a few pixels off of the center of the face. Now we have all of the information needed, and all that was left to do was send movement commands to the drone, based on the vector and the threshold.
 
+### Possible Improvements
+- Use a combination of yaw and left/right movement to handle a left/right displacement of the face. Currently yaw is not used, only left/right movement is.
+- Use the magnitude of the 3D displacement vector to determine the speed at which the drone should move. If the drone is very far from the face, it could move at a higher speed, and if the drone is closer, a slower speed. Currently, the drone moves at a constant speed.
+
+### Limiting Factors
+- Framerate is a big one. We want to make the displacement vector to be as accurate and as recent as possible. A lower framerate would mean that if the person moves abruptly between two frames, the most recent displacement vector would be 'outdated' and wouldn't represent the right direction that the drone needs to move.
+- Drone response time is a huge factor as well. The DJI Tello doesn't move instantly when a command is sent, there is a tiny delay, which could be caused by many factors. However, this limits the drone from moving accurately, because there could be instances where the drone is moving in a direction and needs to suddenly change directions, but the delay means the drone can't reflect the updated information in its movement. Also, the DJI Tello can't handle consecutive commands well. Sometimes, if two commands are sent back-to-back, the second command will not register. Again, this adds to the problem of not having the most recent information.
+
 Note: I am currently using this interface for interacting with the drone: https://github.com/damiafuentes/DJITelloPy. However, I am writing my own interface for the drone and will be switching to it once it is ready: https://github.com/SamarthAP/TelloWrapper.
